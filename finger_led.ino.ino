@@ -1,8 +1,8 @@
 int led1 = 2;
 int led2 = 3;
 int led3 = 4;
-int led4 = 5;  // بدل 11
-int led5 = 6;  // بدل 12
+int led4 = 5;  
+int led5 = 6;  
 
 void setup() {
   Serial.begin(9600);

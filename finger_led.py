@@ -3,18 +3,18 @@ import mediapipe as mp
 import serial
 import time
 
-# افتح الاتصال مع الأردوينو (غير 'COM3' حسب جهازك)
-arduino = serial.Serial('COM3', 9600)
-time.sleep(2)  # مهم جدًا علشان ندي الأردوينو وقت
 
-# إعدادات MediaPipe
+arduino = serial.Serial('COM3', 9600)
+time.sleep(2)  
+
+
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 
-cap = cv2.VideoCapture(0)  # افتح الكاميرا
+cap = cv2.VideoCapture(0)  
 
-finger_tips = [8, 12, 16, 20, 4]  # رؤوس الأصابع
+finger_tips = [8, 12, 16, 20, 4]  
 
 while True:
     ret, frame = cap.read()
@@ -31,22 +31,20 @@ while True:
         for hand_landmarks in result.multi_hand_landmarks:
             landmarks = hand_landmarks.landmark
 
-            # الإبهام
+        
             if landmarks[finger_tips[4]].x < landmarks[finger_tips[4] - 1].x:
                 finger_count += 1
 
-            # باقي الأصابع
+            
             for tip in finger_tips[:4]:
                 if landmarks[tip].y < landmarks[tip - 2].y:
                     finger_count += 1
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-    # إرسال العدد إلى الأردوينو مع نهاية السطر
+    
     if 0 <= finger_count <= 5:
-        arduino.write(f"{finger_count}\n".encode())  # ✅ مهم: استخدم \n
-
-    # عرض عدد الأصابع
+        arduino.write(f"{finger_count}\n".encode())  
     cv2.putText(frame, f'Fingers: {finger_count}', (10, 70),
                 cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
     cv2.imshow("Finger Counter", frame)
@@ -54,7 +52,6 @@ while True:
     if cv2.waitKey(1) == ord('q'):
         break
 
-# إنهاء كل حاجة
 cap.release()
 cv2.destroyAllWindows()
 arduino.close()
